@@ -1,4 +1,4 @@
-# Overview
+## Overview
 
 This example repository accompanies a demo video for Red Gate SQL SQL Source Control Migrations v2.  It's showing how to work through a scenario where two developers have created migration scripts in different git branches and you need to merge them together.
 
@@ -9,7 +9,7 @@ You can watch the demo video on YouTube [TODO: LINK]
 
 If you would like to setup the scenario for yourself and then step through the demo you can clone this repository and follow the instructions below.
 
-# Setup
+## Setup
 
 These instructions create a set-up the same as the start of the video.
 
@@ -34,9 +34,9 @@ $ git checkout master
 - SQL Source Control setup
 	- Link the 'migrations-demo-dev' database to the db_source_control folder with SQL Source Control
 
-# Demo Scenario Instructions
+## Demo Scenario Instructions
 
-## Check everything is setup
+### Check everything is setup
 - Your working copy is on the 'master' branch of this repository
 - You have three databases which are all identical from a schema point of view
 	- They contain one table called 'People' with an 'id' and a 'name' column.  
@@ -50,7 +50,7 @@ $ git branch
   refactor/rename-people-table
 ```
 
-## Create your branch and make your migration
+### Create your branch and make your migration
 	
 - Create a new branch and check it out, call this branch 'feature/not-null'
 
@@ -80,7 +80,7 @@ $ git add .
 $ git commit . -m 'Added migration script to add NOT NULL constraint to the name column'
 ```
 
-## Merge your changes and existing changes into the master branch
+### Merge your changes and existing changes into the master branch
 
 At this stage in the demo you want to deploy your changes and any other changes to the UAT environment.  However you now 'notice' that there have been changes on another branch that also need deploying.  These other changes rename the table that you were just working on, also using a migration script.  As your script references the current name of the table you want to run your changes first, then the other developers changes.
 
@@ -108,14 +108,32 @@ $ git merge refactor/rename-people-table
 $ git commit .  -m 'Merged feature/not-null and refactor/rename-people-table into master.  Resolved conflicts'
 ```
 
-## Update your dev environment to have the latest changes
+### Update your dev environment to have the latest changes
+
 - Open SSMS and select 'get latest' tab.  Press the 'get latest' button
 - This will bring in the new migration script to rename People to Customers
 - Refresh the object browser and check that your table has renamed and the 'name' column still has the NOT NULL constraint you added
 
-## Use SQL Compare GUI to deploy these changes to UAT
+### Use SQL Compare GUI to deploy these changes to UAT
 
-## Use SQL Compare Command line to deploy these changes to your CLI environment (Extra Credit) 
+- Launch SQL Compare
+- On the left select Source Control, and the scripts folder option
+- Select the db_source_control folder
+- On the right select your local database
+- Select the 'migrations-demo-uat' database
+- Run the comparison
+- Select all changes
+- Deploy now
+- View your script.  The NOT NULL changes will be ahead of the sp_rename
+- Deploy
+- Open SSMS and check the UAT database has a Customers table, and that the name that was previously NULL is now 'unknown name'
+
+### Use SQL Compare Command line to deploy these changes to your CLI environment (Extra Credit) 
+
+```
+.\SQLCompare.exe /scripts1:"D:\workspace\migrations-demo\db_source_control" /server2:SERVERNAME\SQL2012 /database2:migrations-demo-cli /sync
+```
+
 
 
 
