@@ -99,13 +99,6 @@ At this stage in the demo you want to deploy your changes and any other changes 
 		- Added RedGate.MigrationHistory.sql - now with the conflicts resolved
 		- Deleted Persons.sql - removing the old table which will not be required after the rename
 
-		
-Before Merge
-![Before Merge](images/before_merge.png "Before Merge")
-
-After Merge
-![After Merge](images/after_merge.png "After Merge")
-				
 ```
 $ git checkout master
 $ git merge feature/not-null
@@ -113,6 +106,13 @@ $ git merge refactor/rename-people-table
 # Resolve conflict here...
 $ git commit .  -m 'Merged feature/not-null and refactor/rename-people-table into master.  Resolved conflicts'
 ```
+
+**Before Merge**
+![Before Merge](images/before_merge.png "Before Merge")
+
+**After Merge**
+![After Merge](images/after_merge.png "After Merge")
+				
 
 ### Update your dev environment to have the latest changes
 
