@@ -5,9 +5,13 @@ This example repository accompanies a demo video for Red Gate SQL SQL Source Con
 - You are playing the part of a developer who will add a migration script to add a NOT NULL constraint to an existing column 
 - You then 'find' another developer has renamed the table you are working on in another branch
 
+You can watch the demo video on YouTube [TODO: LINK]
+
+If you would like to setup the scenario for yourself and then step through the demo you can clone this repository and follow the instructions below.
+
 # Setup
 
-If you want to run this scenario yourself you can follow the instructions below to reach a set-up exactly the same as the start of the video.
+These instructions create a set-up the same as the start of the video.
 
 - Repository setup
 	- Clone this repository to your local machine
@@ -30,9 +34,7 @@ $ git checkout master
 - SQL Source Control setup
 	- Link the 'migrations-demo-dev' database to the db_source_control folder with SQL Source Control
 
-# Demo Video Instructions
-
-You can watch the demo video on YouTube
+# Demo Scenario Instructions
 
 ## Check everything is setup
 - Your working copy is on the 'master' branch of this repository
@@ -51,6 +53,7 @@ $ git branch
 ## Create your branch and make your migration
 	
 - Create a new branch and check it out, call this branch 'feature/not-null'
+
 ```
 $ git branch feature/not-null
 $ git checkout feature/not-null
@@ -59,20 +62,60 @@ $ git branch
   master
   refactor/rename-people-table
 ```
+
 - Open SSMS and select your 'migrations-demo-dev' database
 - Open the SQL Source Control tab
 - Create a new migration script, name it 'Adding a NOT NULL constraint to the People table'
-- Paste in the contents of the 'sample_not_null_column_migration.sql'
-	- This script contains a guard clause, checking that this table and column are present in the database
+- Paste in the contents of the 'sample_not_null_column_migration.sql'.  This script contains:
+	- A guard clause, checking that the 'People' table and 'name' column are present in the database
 	- There is a line to set any NULL names to 'unknown name'
 	- There is a line to alter the name column to forbid NULL values
 - Run the script on your database by pressing F5
 - Save the migration script
 - Go to the commit tab and save the changes (migrations history, Red Gate schema)
 - Open your git client and add and commit these changes
+
 ```
 $ git add .
 $ git commit . -m 'Added migration script to add NOT NULL constraint to the name column'
 ```
 
-## Merge
+## Merge your changes and existing changes into the master branch
+
+At this stage in the demo you want to deploy your changes and any other changes to the UAT environment.  However you now 'notice' that there have been changes on another branch that also need deploying.  These other changes rename the table that you were just working on, also using a migration script.  As your script references the current name of the table you want to run your changes first, then the other developers changes.
+
+- Merge your changes into the master branch by switching to 'master' then merging your changes in from the 'feature/not-null' branch
+- Merge the other changes into the master branch from the 'refactor/rename-people-table'.  This will cause a conflict in db_source_control/functions/RedGate.MigrationHistory.sql
+- Open db_source_control/functions/RedGate.MigrationHistory.sql in a text editor of your choice.
+	- This conflict is a standard git file conflict due to having different conflicting edits between the branches.  It's not a conflict between your local database and the master branch.
+	- Fixing this is a little fiddly...  This Table Value Function contains a JSON array in which we're storing information about the migrations, and it's now had both changes merged together.  There are four things to check/fix.
+		- Check that the section of JSON with the name 'Adding a NOT NULL constraint to the People table' is above the other block of JSON
+		- The blocks will be seperated by a line that will read read '======='.  Replace that with a closing curly bracket, a comma, and an opening curly bracket between the two array elements, e.g. '},{'  (without the quotes)
+		- Change the value of the 'Order' parameter.  They will both be set to zero currently.  You want 'Adding a NOT NULL constraint to the People table' to run first, so leave that as '0' (without the quotes).  Change the order value in the other block to be '1' (without the quotes).
+		- Remove the lines showing '<<<<<<< HEAD' and  '>>>>>>> refactor/change-table-name' that are above and below the conflicted sections
+	- Save this file and mark the conflicts resolved
+	- Commit this file, along with the other changes.  There will be one files added to master and one deleted
+		- Added RedGate.MigrationHistory.sql - now with the conflicts resolved
+		- Deleted Persons.sql - removing the old table which will not be required after the rename
+
+TODO - Add files/screenshots of the conflicted file before and after fixing.
+				
+```
+$ git checkout master
+$ git merge feature/not-null
+$ git merge refactor/rename-people-table
+# Resolve conflict here...
+$ git commit .  -m 'Merged feature/not-null and refactor/rename-people-table into master.  Resolved conflicts'
+```
+
+## Update your dev environment to have the latest changes
+- Open SSMS and select 'get latest' tab.  Press the 'get latest' button
+- This will bring in the new migration script to rename People to Customers
+- Refresh the object browser and check that your table has renamed and the 'name' column still has the NOT NULL constraint you added
+
+## Use SQL Compare GUI to deploy these changes to UAT
+
+## Use SQL Compare Command line to deploy these changes to your CLI environment (Extra Credit) 
+
+
+
