@@ -108,9 +108,11 @@ $ git commit .  -m 'Merged feature/not-null and refactor/rename-people-table int
 ```
 
 **Before Merge**
+
 ![Before Merge](images/before_merge.png "Before Merge")
 
 **After Merge**
+
 ![After Merge](images/after_merge.png "After Merge")
 				
 
