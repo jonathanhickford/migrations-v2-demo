@@ -20,6 +20,7 @@ These instructions create a set-up the same as the start of the video.
 
 ```
 $ git clone git@github.com:jonathanhickford/migrations-v2-demo.git
+$ cd .\migrations-v2-demo
 $ git checkout refactor/rename-people-table
 $ git checkout master
 ```
@@ -88,7 +89,7 @@ At this stage in the demo you want to deploy your changes and any other changes 
 - Merge the other changes into the master branch from the 'refactor/rename-people-table'.  This will cause a conflict in db_source_control/functions/RedGate.MigrationHistory.sql
 - Open db_source_control/functions/RedGate.MigrationHistory.sql in a text editor of your choice.
 	- This conflict is a standard git file conflict due to having different conflicting edits between the branches.  It's not a conflict between your local database and the master branch.
-	- Fixing this is a little fiddly...  This Table Value Function contains a JSON array in which we're storing information about the migrations, and it's now had both changes merged together.  There are four things to check/fix.
+	- Fixing this is a little fiddly...  This Table Value Function contains a JSON array in which we're storing information about the migrations, and it's now had both changes merged together.  There are four things to check/fix (see image below).
 		- Check that the section of JSON with the name 'Adding a NOT NULL constraint to the People table' is above the other block of JSON
 		- The blocks will be seperated by a line that will read read '======='.  Replace that with a closing curly bracket, a comma, and an opening curly bracket between the two array elements, e.g. '},{'  (without the quotes)
 		- Change the value of the 'Order' parameter.  They will both be set to zero currently.  You want 'Adding a NOT NULL constraint to the People table' to run first, so leave that as '0' (without the quotes).  Change the order value in the other block to be '1' (without the quotes).
@@ -98,7 +99,8 @@ At this stage in the demo you want to deploy your changes and any other changes 
 		- Added RedGate.MigrationHistory.sql - now with the conflicts resolved
 		- Deleted Persons.sql - removing the old table which will not be required after the rename
 
-TODO - Add files/screenshots of the conflicted file before and after fixing.
+![Before Merge](images/before_merge.png "Before Merge")
+![After Merge](images/after_merge.png "After Merge")
 				
 ```
 $ git checkout master
