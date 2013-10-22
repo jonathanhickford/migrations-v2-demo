@@ -26,11 +26,10 @@ $ git checkout master
 ```
 
 - Database setup
-	- Create three databases
+	- Run the 'setup-migrations-demo.sql' script in the setup_scripts folder.  This will create the three databases below and populate them with data (including NULL values)
 		- migrations-demo-dev
 		- migrations-demo-uat
 		- migrations-demo-cli
-	- Run the three scripts in the setup_scripts folder to populate these with data (including NULL values)
 
 - SQL Source Control setup
 	- Link the 'migrations-demo-dev' database to the db_source_control folder with SQL Source Control
